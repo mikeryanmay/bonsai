@@ -4,4 +4,4 @@ bonsai.Rproj
 test.R
 .DS_Store
 .Rbuildignore
-bonsai_pages
+bonsai_pages/
