@@ -2,7 +2,7 @@ Package: bonsai
 Type: Package
 Title: Automated phylogenetic MCMC diagnosis
 Version: 0.9
-Date: 2015-07-02
+Date: 2017-06-01
 Author: Michael R. May and Brian R. Moore
 Maintainer: Michael R. May <mikeryanmay@gmail.com>
 Description: bonsai automates a battery of common diagnostics
