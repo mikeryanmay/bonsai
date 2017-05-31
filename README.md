@@ -55,14 +55,33 @@ Executing the above code will create a `bonsai` object in R memory. Next, we can
 project$makeRMarkdown()
 ```
 
-This will generate a folder that contains the summary in the provided output directory. The main page of interest is called \_main\_bonsai\_page.html.
+This will generate a folder that contains the summary in the provided output directory. The main page of interest is called \_main\_bonsai\_page.html. See an example at [here](https://rawgit.com/mikeryanmay/bonsai/master/examples/primates/output_eight_chains/bonsai_pages/_main_bonsai_page.html).
 
 ### The hard way
 
-Work in progress
+Stay tuned.
 
 ## Interpreting the bonsai report
 
+### Diagnostics
 
+The "Diagnostics" page contains a high-level summary of the health of each of the MCMC chains. By clicking on a particular chain, you can see the overall failure rate of the MCMC diagnostics for that chain (convergence and ESS); this number should be less than 5% for a healthy MCMC run. For example, [this chain](https://rawgit.com/mikeryanmay/bonsai/master/examples/primates/output_eight_chains/bonsai_pages/posterior_flags_run_1_bonsai_page.html) failed because a third of the MCMC diagnostics were critical failures (p < 0.05 for convergence diagnostics, and ESS < 500).
+
+### Numerical parameters
+
+The "Numerical parameters" page provides detailed summaries for each numerical parameter (one per page) across each of the MCMC chains.
+
+### Clade parameters
+
+The "Clade parameters" page provides detailed summaries for each clade across each of the MCMC chains. Clades are treated as binary (presence-absence) random variables.
+
+
+### Compare trees
+
+The "Compare trees" compares the posterior probabilities of clades sampled between MCMC chains. This provides information about whether independent chains are providing similar estimates of the marginal posterior distribution of tree topologies.
+
+Along the x-axis of each panel is the posterior probability of each clade for run i; on the y-axis is the posterior probability of each clade for run j. If the MCMC chains are healthy, then they should be agreeing about the posterior probabilities of individual clades; therefore, a "healthy" MCMCs are indicated by each comparison falling along the one-to-one line within each panel, as in [this example](https://rawgit.com/mikeryanmay/bonsai/master/examples/primates/output_eight_chains/bonsai_pages/compare_trees_bonsai_page.html).
 
 ## Batching bonsai
+
+Work in progress.
