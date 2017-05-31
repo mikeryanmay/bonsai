@@ -1,0 +1,34 @@
+Package: bonsai
+Type: Package
+Title: Automated phylogenetic MCMC diagnosis
+Version: 0.9
+Date: 2015-07-02
+Author: Michael R. May and Brian R. Moore
+Maintainer: Michael R. May <mikeryanmay@gmail.com>
+Description: bonsai automates a battery of common diagnostics
+             for the output of Bayesian phylogenetic MCMC.
+License: GPL-3
+Depends:
+    ape,
+    coda,
+    knitr,
+    rmarkdown,
+    dgof,
+    RColorBrewer,
+    rncl
+Suggests:
+    testthat
+VignetteBuilder: knitr
+RoxygenNote: 5.0.1
+Collate:
+    bonsaiRefClass.R
+    bonsaiFlags.R
+    bonsaiCompareTrees.R
+    bonsaiAutoBurnin.R
+    bonsaiJointDistributions.R
+    bonsaiMakeTex.R
+    bonsaiMakeRMarkdown.R
+    bonsaiInitialize.R
+    CladeParameterRefClass.R
+    NumericalParameterRefClass.R
+    treeComparisons.R

@@ -1,0 +1,38 @@
+---
+title:
+output: 
+  html_document: 
+    theme: spacelab
+    toc: false
+---
+```{r, include = FALSE}
+library(knitr)
+library(bonsai)
+knit_theme$set("default")
+options(digits = 3)
+palette(palette)
+```
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(dev="png")
+```
+#[primates HKY Gamma one chain](_main_bonsai_page.html)
+
+##[Diagnostics](_main_bonsai_page.html)
+
+### Posterior
+
+run 1
+
+#<span style="color:green">**SUCCESS:** `r 100 * mean(omnibus_diagnostics_posterior[[1]] == 1, na.rm=TRUE)`% of diagnostics failed for this run.</span>
+```{r, echo = FALSE}
+kable(ifelse(omnibus_diagnostics_posterior[[1]]==1,"fail","pass"),booktabs=TRUE,row.names=TRUE)
+```
+
+### Prior
+
+[run 1](prior_flags_run_1_bonsai_page.html)
+
+##[Numerical parameters](numeric_parameters.html)
+
+##[Clade parameters](clade_parameters.html)
+

@@ -1,0 +1,165 @@
+# Set the move index to 0
+mi = 0
+
+#################
+# Load the data #
+#################
+
+data = readDiscreteCharacterData("primates_cytb.nex")
+n_species = data.ntaxa()
+names = data.names()
+
+########################
+# Setup the tree model #
+########################
+
+# Specify a prior on the diversification and turnover rate
+a = 5
+b = 1
+diversification ~ dnGamma(a,b)
+
+c = 5
+d = 1
+turnover ~ dnGamma(c,d)
+
+# now transform the diversification and turnover rates into speciation and extinction rates
+speciation := diversification + turnover
+extinction := turnover
+
+# specify a prior on the root age (our informed guess is about 75-80 mya)
+root ~ dnUniform(50.0,100.0)
+
+# specify the sampling fraction (the number of species sampled over the total number of species)
+sampling_fraction <- 23 / 270 # 23 out of the ~ 270 primate species
+
+# create some moves that change the stochastic variables
+# all moves are sliding proposals but you could use scaling proposals for the rates too
+moves[++mi] = mvSlide(diversification,delta=1,tune=true,weight=1)
+moves[++mi] = mvSlide(turnover,delta=1,tune=true,weight=1)
+moves[++mi] = mvSlide(root,delta=1,tune=true,weight=1)
+
+# construct a variable for the tree drawn from a birth death process
+psi ~ dnBDP(lambda=speciation, mu=extinction, rootAge=abs(root), rho=sampling_fraction, samplingStrategy="uniform", taxa=names)
+
+moves[++mi] = mvNarrow(psi, weight=5.0)
+moves[++mi] = mvNNI(psi, weight=1.0)
+moves[++mi] = mvFNPR(psi, weight=3.0)
+moves[++mi] = mvSubtreeScale(psi, weight=3.0)
+moves[++mi] = mvNodeTimeSlideUniform(psi, weight=15.0)
+
+################################
+# Setup the substitution model #
+################################
+
+kappa ~ dnLnorm(0.0,1.25)
+moves[++mi] = mvScale(kappa, weight=1.0)
+
+pi_prior = v(1,1,1,1)
+pi ~ dnDirichlet(pi_prior)
+moves[++mi] = mvSimplexElementScale(pi,weight=2)
+
+Q := fnHKY(kappa,pi)
+
+########################
+# Setup the ASRV model #
+########################
+
+alpha_prior = 0.05
+alpha ~ dnExponential( alpha_prior )
+beta := alpha
+K = 4
+gamma_rates := fnDiscretizeGamma( alpha, beta, K, false )
+
+# add moves for the stationary frequencies, exchangeability rates and the shape parameter
+moves[++mi] = mvScale(alpha,weight=2)
+
+#########################
+# Setup the clock model #
+#########################
+
+# R_prior = 0.01
+# R ~ dnExponential( R_prior )
+
+R = 0.01
+
+# moves[++mi] = mvScale(R,weight=2)
+
+######################################
+# Setup the sequence evolution model #
+######################################
+
+seq ~ dnPhyloCTMC(tree=psi, Q=Q, branchRates=R, siteRates=gamma_rates, type="DNA")
+
+###########################
+# Clamp the observed data #
+###########################
+
+seq.clamp(data)
+
+#######################
+# We define our model #
+#######################
+
+mymodel = model(Q)
+
+#####################
+# Make the monitors #
+#####################
+
+monitors[1] = mnModel(filename="output_eight_chains/primates_cytb_HKY_Gamma_prior.log",printgen=10, separator = TAB)
+monitors[2] = mnFile(filename="output_eight_chains/primates_cytb_HKY_Gamma_prior.trees",printgen=10, separator = TAB, psi)
+monitors[3] = mnScreen(printgen=1000)
+
+########################
+# Make the MCMC object #
+########################
+
+mymcmc = mcmc(mymodel, monitors, moves, 8)
+mymcmc.operatorSummary()
+
+###################
+# Run under prior #
+###################
+
+mymcmc.run(generations=10000,underPrior=TRUE)
+
+#####################
+# Make the monitors #
+#####################
+
+monitors[1] = mnModel(filename="output_eight_chains/primates_cytb_HKY_Gamma_posterior.log",printgen=10, separator = TAB)
+monitors[2] = mnFile(filename="output_eight_chains/primates_cytb_HKY_Gamma_posterior.trees",printgen=10, separator = TAB, psi)
+monitors[3] = mnScreen(printgen=1000)
+
+########################
+# Make the MCMC object #
+########################
+
+mymcmc = mcmc(mymodel, monitors, moves, 8)
+mymcmc.operatorSummary()
+
+##################
+# Do MCMC burnin #
+##################
+
+mymcmc.burnin(generations=1000,tuningInterval=100)
+mymcmc.operatorSummary()
+
+################
+# Do full MCMC #
+################
+
+mymcmc.run(generations=10000)
+mymcmc.operatorSummary()
+
+###########################
+# Analyze the tree output #
+###########################
+
+# treetrace = readTreeTrace("output_eight_chains/primates_cytb_HKY_Gamma.trees", treetype="clock")
+# treetrace.summarize()
+
+# Make the MAP tree
+# mapTree(treetrace,"output_eight_chains/primates_cytb_HKY_Gamma.tree")
+
+q()
