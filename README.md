@@ -4,7 +4,7 @@ Semi-automated diagnosis for phylogenetic Markov-chain Monte Carlo.
 
 ### Installation
 
-The easiest way to install bonsai is using `install_github()` from the `devtools` package:
+First, make sure you have `devtools` installed. Then, install bonsai directly from github using `install_github()`:
 
 ```R
 # install devtools
@@ -14,5 +14,7 @@ install.packages("devtools")
 library(devtools)
 
 # install bonsai
-install_github("bonsai")
+install_github("mikeryanmay/bonsai")
 ```
+
+### Using bonsai
