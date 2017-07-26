@@ -27,6 +27,7 @@ bonsai$methods(
                         outgroup                                  = NULL,
                         clade_posterior_threshold                 = 0.5,
                         ignore_list                               = c(),
+                        check_tip_labels                          = TRUE,
                         ...) {
 
     if ( interactive() ) {
@@ -358,7 +359,7 @@ bonsai$methods(
       }
 
       # Make sure all the trees have the same labels.
-      if ( length(posterior_trees) > 1 ) {
+      if ( length(posterior_trees) > 1 && check_tip_labels ) {
         for (i in 2:length(posterior_trees) ) {
           mismatch <- any(!posterior_trees[[i]][[1]]$tip.label %in% posterior_trees[[i-1]][[1]]$tip.label)
           if ( mismatch ) stop("Posterior tree files do not all contain the same species labels.",call. = FALSE)
