@@ -1,0 +1,8 @@
+fnJTT
+fnJones
+Q := fnJones()
+Q
+diag(Q)
+Q.methods()
+Q.getTransitionProbabilities(1000)
+fnFreeK
