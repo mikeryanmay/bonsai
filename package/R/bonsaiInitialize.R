@@ -27,7 +27,6 @@ bonsai$methods(
                         outgroup                                  = NULL,
                         clade_posterior_threshold                 = 0.5,
                         ignore_list                               = c(),
-                        check_tip_labels                          = TRUE,
                         ...) {
 
     if ( interactive() ) {
@@ -358,11 +357,36 @@ bonsai$methods(
         if ( verbose ) setTxtProgressBar(bar,file/x)
       }
 
+      # # DEBUG: add some random annotations to tip labels for debugging purposes
+      # if ( length(posterior_trees) > 1 ) {
+      #   for (i in 1:length(posterior_trees) ) {
+      #     for (j in 1:length(posterior_trees[[i]])) {
+      #       old_tip_labels <- posterior_trees[[i]][[j]]$tip.label
+      #       new_tip_labels <- paste0(old_tip_labels,"[&index=",sample(1:length(old_tip_labels)),"]")
+      #       posterior_trees[[i]][[j]]$tip.label = new_tip_labels
+      #     }
+      #   }
+      # }
+
+      # Make sure to strip out any annotations that may have
+      # made it into the tip labels
+      if ( length(posterior_trees) > 1 ) {
+        for (i in 1:length(posterior_trees) ) {
+          for (j in 1:length(posterior_trees[[i]])) {
+            if( any(grepl("\\[", posterior_trees[[i]][[j]]$tip.label)) ) {
+              posterior_trees[[i]][[j]]$tip.label <- gsub("\\[(.*?)\\]","",posterior_trees[[i]][[j]]$tip.label)
+            }
+          }
+        }
+      }
+
       # Make sure all the trees have the same labels.
-      if ( length(posterior_trees) > 1 && check_tip_labels ) {
+      if ( length(posterior_trees) > 1 ) {
         for (i in 2:length(posterior_trees) ) {
           mismatch <- any(!posterior_trees[[i]][[1]]$tip.label %in% posterior_trees[[i-1]][[1]]$tip.label)
-          if ( mismatch ) stop("Posterior tree files do not all contain the same species labels.",call. = FALSE)
+          if ( mismatch ) {
+            stop("Posterior tree files do not all contain the same species labels.", call. = FALSE)
+          }
         }
       }
 
